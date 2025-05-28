@@ -278,7 +278,7 @@ class ImageGeneration:
                         "tooltip": "Text generation temperature",
                     },
                 ),
-            }
+            },
         }
 
     RETURN_TYPES = ("IMAGE",)
@@ -286,8 +286,9 @@ class ImageGeneration:
     FUNCTION = "generate"
     CATEGORY = "BAGEL"
 
-    def generate(self, model, vae_model, tokenizer, vae_transform, vit_transform, new_token_ids, prompt, 
-                seed, cfg_text_scale, cfg_img_scale, timestep_shift, num_timesteps, cfg_renorm_min):
+    def generate(self, model, vae_model, tokenizer, vae_transform, vit_transform, new_token_ids, prompt, image_ratio, 
+                 seed, cfg_text_scale, cfg_img_scale, cfg_interval, timestep_shift, num_timesteps, cfg_renorm_min, 
+                 cfg_renorm_type, text_temperature):
 
         inferencer = InterleaveInferencer(
             model=model, 
@@ -314,7 +315,7 @@ class ImageGeneration:
             timestep_shift=timestep_shift,
             num_timesteps=num_timesteps,
             cfg_renorm_min=cfg_renorm_min,
-            cfg_renorm_type="global",
+            cfg_renorm_type=cfg_renorm_type,
         )
 
         output_dict = inferencer(text=prompt, **inference_hyper)
