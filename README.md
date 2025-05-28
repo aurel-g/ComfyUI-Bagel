@@ -41,3 +41,15 @@ snapshot_download(cache_dir=cache_dir,
 )
 
 ```
+
+### Or
+
+```
+# Clone model using git lfs (recommended)
+git lfs install
+git clone https://huggingface.co/ByteDance-Seed/BAGEL-7B-MoT models/bagel/BAGEL-7B-MoT
+
+# Or use huggingface_hub
+pip install huggingface_hub
+python -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='ByteDance-Seed/BAGEL-7B-MoT', local_dir='models/bagel/BAGEL-7B-MoT')"
+```
