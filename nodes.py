@@ -336,14 +336,95 @@ class ImageThinkGeneration:
                 "vit_transform": ("VITTRANSFORM",),
                 "new_token_ids": ("TOKENIDS",),
                 "prompt": ("PROMPT",),
-                "seed": ("INT", {"default": 42}),
                 "max_think_token_n": ("INT", {"default": 1000}),
-                "cfg_text_scale": ("FLOAT", {"default": 4.0}),
-                "cfg_img_scale": ("FLOAT", {"default": 1.0}),
-                "timestep_shift": ("FLOAT", {"default": 3.0}),
-                "num_timesteps": ("INT", {"default": 50}),
-                "cfg_renorm_min": ("FLOAT", {"default": 1.0}),
-            }
+                "seed": (
+                    "INT",
+                    {
+                        "default": 0,
+                        "min": 0,
+                        "max": 1000000,
+                        "tooltip": "Random seed, 0 for random",
+                    },
+                ),
+                "image_ratio": (
+                    ["1:1", "4:3", "3:4", "16:9", "9:16"],
+                    {"default": "1:1", "tooltip": "Image aspect ratio"},
+                ),
+                "cfg_text_scale": (
+                    "FLOAT",
+                    {
+                        "default": 4.0,
+                        "min": 1.0,
+                        "max": 8.0,
+                        "step": 0.1,
+                        "tooltip": "CFG text scaling",
+                    },
+                ),
+                "cfg_img_scale": (
+                    "FLOAT",
+                    {
+                        "default": 2.0,
+                        "min": 1.0,
+                        "max": 4.0,
+                        "step": 0.1,
+                        "tooltip": "CFG image scaling",
+                    },
+                ),
+                "cfg_interval": (
+                    "FLOAT",
+                    {
+                        "default": 0.4,
+                        "min": 0.0,
+                        "max": 1.0,
+                        "step": 0.1,
+                        "tooltip": "CFG interval start value",
+                    },
+                ),
+                "timestep_shift": (
+                    "FLOAT",
+                    {
+                        "default": 3.0,
+                        "min": 1.0,
+                        "max": 5.0,
+                        "step": 0.5,
+                        "tooltip": "Timestep offset",
+                    },
+                ),
+                "num_timesteps": (
+                    "INT",
+                    {
+                        "default": 50,
+                        "min": 10,
+                        "max": 100,
+                        "step": 5,
+                        "tooltip": "Denoising steps",
+                    },
+                ),
+                "cfg_renorm_min": (
+                    "FLOAT",
+                    {
+                        "default": 1.0,
+                        "min": 0.0,
+                        "max": 1.0,
+                        "step": 0.1,
+                        "tooltip": "CFG re-normalization minimum value",
+                    },
+                ),
+                "cfg_renorm_type": (
+                    ["global", "local", "text_channel"],
+                    {"default": "global", "tooltip": "CFG re-normalization type"},
+                ),
+                "text_temperature": (
+                    "FLOAT",
+                    {
+                        "default": 0.3,
+                        "min": 0.0,
+                        "max": 1.0,
+                        "step": 0.1,
+                        "tooltip": "Text generation temperature",
+                    },
+                ),
+            },
         }
 
     RETURN_TYPES = ("IMAGE", "TEXT",)
@@ -352,7 +433,8 @@ class ImageThinkGeneration:
     CATEGORY = "BAGEL"
 
     def generate(self, model, vae_model, tokenizer, vae_transform, vit_transform, new_token_ids, prompt, 
-                seed, max_think_token_n, cfg_text_scale, cfg_img_scale, timestep_shift, num_timesteps, cfg_renorm_min):
+                seed, max_think_token_n, cfg_text_scale, cfg_img_scale, timestep_shift, num_timesteps, cfg_renorm_min, 
+                cfg_interval, cfg_renorm_type, text_temperature):
 
         inferencer = InterleaveInferencer(
             model=model, 
